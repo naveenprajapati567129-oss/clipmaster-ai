@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07070b">
+<meta name="description" content="ClipMaster AI: frontend prototype for generating vertical video clips.">
+<title>ClipMaster AI</title>
+<style>
+:root{--bg:#07070b;--bg2:#101018;--card:#15151f;--line:#262636;--tx:#f2f2fa;--mute:#9a9ab3;--p:#8b5cf6;--b:#3b82f6;--g:linear-gradient(135deg,#8b5cf6,#3b82f6);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:70px;scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(900px 500px at 80% -10%,#2a1b5a55,transparent),var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+button,input,select{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:20;background:#0a0a10e6;backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:10px 16px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.5px;white-space:nowrap}
+.logo i{width:34px;height:34px;border-radius:10px;background:var(--g);display:grid;place-items:center;font-style:normal;box-shadow:0 0 18px #8b5cf688}
+.logo span{background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent}
+nav{display:flex;gap:4px;overflow-x:auto;margin-left:auto;scrollbar-width:none}
+nav button{background:none;border:0;padding:8px 12px;border-radius:10px;color:var(--mute);white-space:nowrap;cursor:pointer}
+nav button.on{background:#8b5cf622;color:#fff}
+main{max-width:1100px;margin:0 auto;padding:18px 16px 60px;display:grid;gap:18px}
+.banner{background:#3b82f61a;border:1px solid #3b82f655;border-radius:14px;padding:10px 14px;font-size:14px;color:#bcd3ff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+h1{font-size:clamp(24px,4vw,36px);margin:0 0 6px}h2{font-size:18px;margin:0 0 12px}
+.sub{color:var(--mute);margin:0 0 16px}
+.url{display:flex;gap:10px;flex-wrap:wrap}
+.url input[type=text]{flex:1 1 260px;min-height:56px;padding:0 16px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);font-size:16px}
+.url input:focus{outline:2px solid var(--p);border-color:transparent}
+.btn{min-height:52px;padding:0 20px;border-radius:14px;border:1px solid var(--line);background:var(--bg2);cursor:pointer;font-weight:600;transition:.15s}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--g);border:0;box-shadow:0 6px 22px #6d4cf055}
+.btn:disabled{opacity:.5}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.lab{font-size:13px;color:var(--mute);margin:14px 0 8px;display:block}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:64px;min-height:46px;border-radius:12px;border:1px solid var(--line);background:var(--bg2);cursor:pointer}
+.seg button.on{background:#8b5cf630;border-color:var(--p);color:#fff}
+select,.row input[type=range]{width:100%}
+select{min-height:46px;border-radius:12px;background:var(--bg2);border:1px solid var(--line);padding:0 10px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.row small{display:block;color:var(--mute)}
+.sw{width:50px;height:30px;border-radius:30px;background:#2a2a3a;border:0;position:relative;cursor:pointer;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
+.sw.on{background:var(--g)}.sw.on::after{left:23px}
+.colors{display:flex;gap:10px}.colors button{width:36px;height:36px;border-radius:50%;border:3px solid transparent;cursor:pointer}.colors button.on{border-color:#fff}
+.bar{height:12px;background:var(--bg2);border-radius:12px;overflow:hidden}
+.bar div{height:100%;background:var(--g);transition:width .2s}
+.stages{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.stages span{font-size:12px;padding:6px 10px;border-radius:20px;background:var(--bg2);color:var(--mute)}
+.stages span.on{background:#8b5cf630;color:#fff}.stages span.done{color:#6ee7b7}
+.clips{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+.clip{background:var(--bg2);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.th{position:relative;aspect-ratio:9/16;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;cursor:pointer}
+.th.r11{aspect-ratio:1}.th.r169{aspect-ratio:16/9}
+.face{position:absolute;left:50%;top:32%;width:44%;aspect-ratio:1;border-radius:50%;background:#ffd9b8;transform:translateX(-50%)}
+.face::before,.face::after{content:"";position:absolute;top:38%;width:11%;aspect-ratio:1;border-radius:50%;background:#222;left:28%}
+.face::after{left:62%}
+.body{position:absolute;left:50%;top:62%;width:70%;height:50%;border-radius:40% 40% 0 0;background:#00000055;transform:translateX(-50%)}
+.cap{position:relative;margin:0 6px 14px;text-align:center;font-weight:900;text-transform:uppercase;text-shadow:0 2px 6px #000;line-height:1.1}
+.badge{position:absolute;top:8px;left:8px;background:#000a;border-radius:8px;padding:3px 7px;font-size:12px}
+.score{position:absolute;top:8px;right:8px;background:var(--g);border-radius:8px;padding:3px 7px;font-size:12px;font-weight:700}
+.ctr{position:absolute;inset:18% 22%;border:2px dashed #fff9;border-radius:10px;pointer-events:none}
+.meta{padding:10px}.meta b{display:block;font-size:14px;margin-bottom:8px}
+.meta .btns{display:flex;gap:6px}.meta .btns button{flex:1;min-height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:13px}
+.empty{text-align:center;color:var(--mute);padding:36px 10px}
+.modal{position:fixed;inset:0;background:#000c;z-index:50;display:grid;place-items:center;padding:16px;overflow:auto}
+.mbox{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;width:min(420px,100%);display:grid;gap:12px}
+.mbox .th{border-radius:14px;max-height:62vh;margin:0 auto;width:100%;cursor:default}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1f1f2e;border:1px solid var(--p);padding:12px 18px;border-radius:14px;z-index:60;max-width:90%;text-align:center}
+@keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes slide{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+const {useState,useEffect,useRef}=React;
+const html=htm.bind(React.createElement);
+const TITLES=["Funniest reaction moment","Epic punchline","Crowd goes wild","Unexpected plot twist","Best roast of the night","Awkward silence gag","Viral-worthy line","Perfect comic timing","Judge cannot stop laughing","Hilarious comeback"];
+const CAPS=["Wait for it","Yeh kya tha","Zabardast","Full on comedy","Hasi na ruke","Kya baat hai"];
+const STAGES=["Analyzing video","Transcribing audio","Finding highlights","Reframing","Adding captions","Rendering"];
+const COLORS=["#ffffff","#facc15","#a78bfa","#60a5fa"];
+const FMT={"9:16":"","1:1":"r11","16:9":"r169"};
+const TR={Fade:"fade .5s",Slide:"slide .45s",Zoom:"pop .4s",None:"none"};
+// ===== FastAPI contract (build your Python backend to match) =====
+// GET  /health            -> {"status":"ok"}
+// POST /api/jobs          multipart: url?, file?, options (JSON string) -> {"id":"..."}
+// GET  /api/jobs/{id}     -> {"status":"queued|processing|done|failed","progress":0-100,"error":null,
+//                             "clips":[{"title","duration","score","preview_url","download_url"}]}
+const API={
+ async health(b){const r=await fetch(b.replace(/\/$/,"")+"/health");if(!r.ok)throw new Error("HTTP "+r.status);return r.json()},
+ async createJob(b,{url,file,opts}){const f=new FormData();if(url)f.append("url",url);if(file)f.append("file",file);f.append("options",JSON.stringify(opts));const r=await fetch(b.replace(/\/$/,"")+"/api/jobs",{method:"POST",body:f});if(!r.ok)throw new Error("HTTP "+r.status);return r.json()},
+ async getJob(b,id){const r=await fetch(b.replace(/\/$/,"")+"/api/jobs/"+id);if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}
+};
+
+function Thumb({c,fmt,s,word,big}){
+  const st=s.capAnim==="Pop"?"pop .35s":s.capAnim==="Fade"?"fade .4s":s.capAnim==="Slide up"?"slide .35s":"none";
+  const sz=(big?s.capSize*1.1:s.capSize*.55);
+  return html`<div key=${big?word:0} class=${"th "+FMT[fmt]} style=${{animation:big?TR[s.trans]:"none",background:`linear-gradient(160deg,hsl(${c.h},70%,32%),hsl(${(c.h+60)%360},70%,14%))`}}>
+    <div class="face" style=${{transform:`translateX(${s.center?-50:-78}%)`}}></div>
+    <div class="body" style=${{transform:`translateX(${s.center?-50:-78}%)`}}></div>
+    ${c.src&&html`<video src=${c.src} muted loop autoplay playsinline style=${{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}}></video>`}
+    ${s.center&&html`<div class="ctr"></div>`}
+    <span class="badge">${c.d}s${c.demo?" · DEMO":""}</span><span class="score">★ ${c.score}</span>
+    ${s.captions&&html`<div class="cap" key=${word} style=${{fontSize:sz+"px",color:s.capColor,animation:st,background:s.capStyle==="Boxed"?"#000b":"none",padding:s.capStyle==="Boxed"?"2px 8px":0,borderRadius:6,WebkitTextStroke:s.capStyle==="Outline"?"1px #000":0}}>${word}</div>`}
+  </div>`;
+}
+
+function App(){
+  const [url,setUrl]=useState(""),[file,setFile]=useState(null),[count,setCount]=useState(10),[dur,setDur]=useState(30),[fmt,setFmt]=useState("9:16");
+  const [capStyle,setCapStyle]=useState("Bold"),[capAnim,setCapAnim]=useState("Pop"),[capSize,setCapSize]=useState(28),[capColor,setCapColor]=useState("#facc15");
+  const [center,setCenter]=useState(true),[reframe,setReframe]=useState(true),[smooth,setSmooth]=useState(60);
+  const [prog,setProg]=useState(0),[busy,setBusy]=useState(false),[urlErr,setUrlErr]=useState(""),[captions,setCaptions]=useState(true),[track,setTrack]=useState(true),[trans,setTrans]=useState("Fade"),[mode,setMode]=useState("demo"),[api,setApi]=useState("http://localhost:8000"),[conn,setConn]=useState(""),[fileObj,setFileObj]=useState(null),[clips,setClips]=useState([]),[prev,setPrev]=useState(null),[toast,setToast]=useState(""),[tab,setTab]=useState("home");
+  const [word,setWord]=useState(0),[play,setPlay]=useState(true);
+  const fileRef=useRef(),tm=useRef();
+  const s={capStyle,capAnim,capSize,capColor,center,captions,trans};
+  useEffect(()=>{try{const v=JSON.parse(localStorage.getItem("cm_settings")||"null");if(v){v.count&&setCount(v.count);v.dur&&setDur(v.dur);v.fmt&&setFmt(v.fmt);v.capStyle&&setCapStyle(v.capStyle);v.capAnim&&setCapAnim(v.capAnim);v.capSize&&setCapSize(v.capSize);v.capColor&&setCapColor(v.capColor);v.center!==undefined&&setCenter(v.center);v.reframe!==undefined&&setReframe(v.reframe);v.smooth!==undefined&&setSmooth(v.smooth);v.captions!==undefined&&setCaptions(v.captions);v.track!==undefined&&setTrack(v.track);v.trans&&setTrans(v.trans);v.mode&&setMode(v.mode);v.api&&setApi(v.api)}}catch(e){}},[]);
+  useEffect(()=>{try{localStorage.setItem("cm_settings",JSON.stringify({count,dur,fmt,capStyle,capAnim,capSize,capColor,center,reframe,smooth,captions,track,trans,mode,api}))}catch(e){}},[count,dur,fmt,capStyle,capAnim,capSize,capColor,center,reframe,smooth,captions,track,trans,mode,api]);
+  const say=m=>{setToast(m);clearTimeout(tm.current);tm.current=setTimeout(()=>setToast(""),2600)};
+  const go=id=>{setTab(id);const e=document.getElementById(id);e&&e.scrollIntoView()};
+  useEffect(()=>{if(!prev||!play)return;const t=setInterval(()=>setWord(w=>w+1),900);return()=>clearInterval(t)},[prev,play]);
+  useEffect(()=>{if(!busy||mode!=="demo")return;const t=setInterval(()=>setProg(p=>{if(p>=100){clearInterval(t);return 100}return p+2}),90);return()=>clearInterval(t)},[busy]);
+  useEffect(()=>{if(busy&&mode==="demo"&&prog>=100){setBusy(false);setClips(Array.from({length:count},(_,i)=>({id:i,t:TITLES[i%TITLES.length],h:(i*47+250)%360,d:Math.max(8,dur-((i*7)%11)),score:98-((i*3)%17),demo:true})));say("Demo clips ready. These are samples, not real video.");setTimeout(()=>go("gallery"),300)}},[prog,busy]);
+  const checkUrl=v=>{if(!v)return "";try{const u=new URL(v);if(!/^https?:$/.test(u.protocol)||!u.hostname.includes("."))return "Enter a full link starting with http:// or https://";return ""}catch(e){return "That does not look like a valid link"}};
+  const onUrl=v=>{setUrl(v);setUrlErr(checkUrl(v.trim()))};
+  const abs=p=>p&&p.startsWith("/")?api.replace(/\/$/,"")+p:p;
+  const gen=async()=>{if(busy)return;const u=url.trim();if(!u&&!fileObj){setUrlErr("Add a video link or upload a video first");say("Add a video first");return}const e=checkUrl(u);if(e){setUrlErr(e);return}setUrlErr("");setClips([]);setProg(0);setBusy(true);
+   if(mode==="demo")return;
+   try{const j=await API.createJob(api,{url:u,file:fileObj,opts:{count,dur,fmt,captions,capStyle,capAnim,capSize,capColor,center,reframe,track,smooth,trans}});
+    for(let i=0;i<900;i++){await new Promise(r=>setTimeout(r,2000));const st=await API.getJob(api,j.id);setProg(Math.round(st.progress||0));if(st.status==="failed")throw new Error(st.error||"Job failed");if(st.status==="done"){setClips((st.clips||[]).map((c,k)=>({id:k,t:c.title,h:(k*47+250)%360,d:c.duration,score:c.score,src:abs(c.preview_url),dl:abs(c.download_url)})));setProg(100);setBusy(false);say("Real clips ready");return}}
+    throw new Error("Timed out")}catch(err){setBusy(false);setProg(0);say("Backend error: "+err.message)}};
+  const stage=Math.min(STAGES.length-1,Math.floor(prog/(100/STAGES.length)));
+  const Seg=({opts,val,set,fmtr})=>html`<div class="seg">${opts.map(o=>html`<button key=${o} class=${val===o?"on":""} onClick=${()=>set(o)}>${fmtr?fmtr(o):o}</button>`)}</div>`;
+  const Tog=({on,set,t,d})=>html`<div class="row"><div>${t}<small>${d}</small></div><button class=${"sw "+(on?"on":"")} onClick=${()=>set(!on)} aria-label=${t}></button></div>`;
+  const dl=c=>say("Demo clips have no video file. Switch to Real backend mode to get downloads.");
+  const nav=[["home","Dashboard"],["create","Create"],["settings","Settings"],["gallery","Clips"]];
+  return html`<div>
+    <header><div class="logo"><i>✂</i><span>CLIPMASTER AI</span></div>
+      <nav>${nav.map(([id,l])=>html`<button key=${id} class=${tab===id?"on":""} onClick=${()=>go(id)}>${l}</button>`)}</nav></header>
+    <main>
+      <div class="banner" id="home">${mode==="demo"?"🧪 DEMO MODE: the interface is real, but video processing is simulated. No clips are created and nothing can be downloaded.":"🟢 REAL BACKEND MODE: your video and settings are sent to "+api+". Clips are real only if your server returns them."}</div>
+      <section><h1>Turn long videos into <span style=${{background:"var(--g)",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>viral clips</span></h1>
+        <p class="sub">Paste a link or upload a video, choose your settings, and generate vertical clips.</p></section>
+      <section class="card" id="create">
+        <h2>1. Add your video</h2>
+        <div class="url"><input type="text" placeholder="Paste a YouTube or video URL here…" value=${url} onInput=${e=>onUrl(e.target.value)} style=${urlErr?{borderColor:"#f87171"}:{}}/>
+          <input ref=${fileRef} type="file" accept="video/*" hidden onChange=${e=>{const f=e.target.files[0];e.target.value="";if(!f)return;if(!f.type.startsWith("video/")){setUrlErr("Please choose a video file");return}setFileObj(f);setFile(f.name+" ("+(f.size/1048576).toFixed(1)+" MB)");setUrlErr("");say("Selected: "+f.name)}}/>
+          <button class="btn" onClick=${()=>fileRef.current.click()}>⬆ Upload Video</button></div>
+        ${urlErr&&html`<p style=${{color:"#f87171",margin:"10px 0 0",fontSize:14}}>⚠ ${urlErr}</p>`}
+        ${file&&html`<p class="sub" style=${{marginTop:10}}>📁 ${file} <button class="btn" style=${{minHeight:34,padding:"0 10px",marginLeft:8}} onClick=${()=>{setFile(null);setFileObj(null)}}>Remove</button></p>`}
+        <div class="grid" style=${{marginTop:6}}>
+          <div><span class="lab">Number of clips</span><${Seg} opts=${[5,10,15,20]} val=${count} set=${setCount}/></div>
+          <div><span class="lab">Clip duration</span><${Seg} opts=${[15,30,60,90]} val=${dur} set=${setDur} fmtr=${o=>o+"s"}/></div>
+          <div><span class="lab">Format</span><${Seg} opts=${["9:16","1:1","16:9"]} val=${fmt} set=${setFmt}/></div>
+        </div>
+        <button class="btn pri" style=${{width:"100%",marginTop:18,minHeight:58,fontSize:18}} disabled=${busy} onClick=${gen}>${busy?"Processing…":mode==="demo"?"✨ Generate Demo Clips":"✨ Generate Clips"}</button>
+        ${(busy||prog>0)&&html`<div style=${{marginTop:16}}><div class="row" style=${{border:0,padding:"0 0 8px"}}><span>${prog>=100?"Done":STAGES[stage]+"…"}</span><b>${prog}%</b></div>
+          <div class="bar"><div style=${{width:prog+"%"}}></div></div>
+          <div class="stages">${STAGES.map((n,i)=>html`<span key=${n} class=${prog>=100||i<stage?"done":i===stage?"on":""}>${prog>=100||i<stage?"✓ ":""}${n}</span>`)}</div></div>`}
+      </section>
+      <section class="grid" id="settings">
+        <div class="card"><h2>Caption animation</h2>
+          <${Tog} on=${captions} set=${setCaptions} t="Automatic captions" d="Transcribe speech and add captions to clips"/>
+          <span class="lab">Style</span><${Seg} opts=${["Bold","Boxed","Outline"]} val=${capStyle} set=${setCapStyle}/>
+          <span class="lab">Animation</span><select value=${capAnim} onChange=${e=>setCapAnim(e.target.value)}>${["Pop","Fade","Slide up","None"].map(o=>html`<option key=${o}>${o}</option>`)}</select>
+          <span class="lab">Transition between clips</span><select value=${trans} onChange=${e=>setTrans(e.target.value)}>${["Fade","Slide","Zoom","None"].map(o=>html`<option key=${o}>${o}</option>`)}</select>
+          <span class="lab">Font size: ${capSize}</span><div class="row" style=${{border:0,padding:0}}><input type="range" min="16" max="44" value=${capSize} onInput=${e=>setCapSize(+e.target.value)}/></div>
+          <span class="lab">Colour</span><div class="colors">${COLORS.map(c=>html`<button key=${c} class=${capColor===c?"on":""} style=${{background:c}} onClick=${()=>setCapColor(c)} aria-label=${c}></button>`)}</div>
+          <div style=${{maxWidth:150,margin:"18px auto 0"}}><${Thumb} c=${{h:270,d:30,score:95}} fmt="9:16" s=${s} word=${CAPS[0]}/></div>
+        </div>
+        <div class="card"><h2>Subject centering and reframing</h2>
+          <${Tog} on=${center} set=${setCenter} t="Subject centering" d="Keeps the main person in the middle"/>
+          <${Tog} on=${reframe} set=${setReframe} t="Auto-reframing" d="Converts wide video to vertical automatically"/>
+          <${Tog} on=${track} set=${setTrack} t="Subject tracking" d="Follows the speaker as they move"/>
+          <span class="lab">Tracking smoothness: ${smooth}%</span><div class="row" style=${{border:0,padding:0}}><input type="range" min="0" max="100" value=${smooth} onInput=${e=>setSmooth(+e.target.value)} disabled=${!reframe||!track}/></div>
+          <p class="sub" style=${{marginTop:14,fontSize:13}}>The dashed box in the preview shows where the subject would be centred.</p>
+        </div>
+      </section>
+      <section class="card" id="backend"><h2>Processing mode</h2>
+        <${Seg} opts=${["demo","real"]} val=${mode} set=${setMode} fmtr=${o=>o==="demo"?"Demo (simulated)":"Real backend"}/>
+        <p class="sub" style=${{marginTop:12,fontSize:13}}>${mode==="demo"?"Demo mode only shows sample cards. No video is processed and nothing can be downloaded.":"Real mode sends your video and settings to your FastAPI server. It fails until a server is running."}</p>
+        ${mode==="real"&&html`<span class="lab">Backend URL</span><div class="url"><input type="text" value=${api} onInput=${e=>setApi(e.target.value)}/><button class="btn" onClick=${async()=>{setConn("Checking…");try{await API.health(api);setConn("✅ Connected")}catch(e){setConn("❌ Cannot reach server")}}}>Test connection</button></div><p class="sub" style=${{marginTop:8}}>${conn}</p>`}
+      </section>
+      <section class="card" id="gallery"><h2>Generated clips ${clips.length>0&&"("+clips.length+")"}</h2>
+        ${clips.length===0?html`<div class="empty">🎬 No clips yet. Press Generate Clips to see a demo.</div>`:
+        html`<div class="clips">${clips.map(c=>html`<div class="clip" key=${c.id}><div onClick=${()=>{setPrev(c);setWord(0);setPlay(true)}}><${Thumb} c=${c} fmt=${fmt} s=${s} word=${CAPS[c.id%CAPS.length]}/></div>
+          <div class="meta"><b>${c.t}</b><div class="btns"><button onClick=${()=>{setPrev(c);setWord(0);setPlay(true)}}>▶ Preview</button><button onClick=${()=>c.dl?window.open(c.dl,"_blank"):dl(c)}>${c.dl?"⬇ Download":"No file (demo)"}</button></div></div></div>`)}</div>`}
+      </section>
+    </main>
+    ${prev&&html`<div class="modal" onClick=${()=>setPrev(null)}><div class="mbox" onClick=${e=>e.stopPropagation()}>
+      <b>${prev.t}</b>
+      <${Thumb} c=${prev} fmt=${fmt} s=${s} word=${CAPS[(prev.id+word)%CAPS.length]} big=${true}/>
+      <div class="bar"><div style=${{width:((word*900)%(prev.d*100))/prev.d+"%"}}></div></div>
+      <div class="seg"><button onClick=${()=>setPlay(!play)}>${play?"⏸ Pause":"▶ Play"}</button><button onClick=${()=>prev.dl?window.open(prev.dl,"_blank"):dl(prev)}>${prev.dl?"⬇ Download":"No file (demo)"}</button><button onClick=${()=>setPrev(null)}>✕ Close</button></div>
+    </div></div>`}
+    ${toast&&html`<div class="toast">${toast}</div>`}
+  </div>`;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App}/>`);
+</script>
+</body>
+</html>
