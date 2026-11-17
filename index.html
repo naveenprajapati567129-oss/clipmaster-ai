@@ -116,7 +116,17 @@ function App(){
   const [center,setCenter]=useState(true),[reframe,setReframe]=useState(true),[smooth,setSmooth]=useState(60);
   const [prog,setProg]=useState(0),[busy,setBusy]=useState(false),[urlErr,setUrlErr]=useState(""),[captions,setCaptions]=useState(true),[track,setTrack]=useState(true),[trans,setTrans]=useState("Fade"),[mode,setMode]=useState("demo"),[api,setApi]=useState("http://localhost:8000"),[conn,setConn]=useState(""),[fileObj,setFileObj]=useState(null),[clips,setClips]=useState([]),[prev,setPrev]=useState(null),[toast,setToast]=useState(""),[tab,setTab]=useState("home");
   const [word,setWord]=useState(0),[play,setPlay]=useState(true);
+  const [previewUrl,setPreviewUrl]=useState("");
   const fileRef=useRef(),tm=useRef();
+  useEffect(()=>{
+  if(!fileObj){
+    setPreviewUrl("");
+    return;
+  }
+  const u=URL.createObjectURL(fileObj);
+  setPreviewUrl(u);
+  return ()=>URL.revokeObjectURL(u);
+},[fileObj]);
   const s={capStyle,capAnim,capSize,capColor,center,captions,trans};
   useEffect(()=>{try{const v=JSON.parse(localStorage.getItem("cm_settings")||"null");if(v){v.count&&setCount(v.count);v.dur&&setDur(v.dur);v.fmt&&setFmt(v.fmt);v.capStyle&&setCapStyle(v.capStyle);v.capAnim&&setCapAnim(v.capAnim);v.capSize&&setCapSize(v.capSize);v.capColor&&setCapColor(v.capColor);v.center!==undefined&&setCenter(v.center);v.reframe!==undefined&&setReframe(v.reframe);v.smooth!==undefined&&setSmooth(v.smooth);v.captions!==undefined&&setCaptions(v.captions);v.track!==undefined&&setTrack(v.track);v.trans&&setTrans(v.trans);v.mode&&setMode(v.mode);v.api&&setApi(v.api)}}catch(e){}},[]);
   useEffect(()=>{try{localStorage.setItem("cm_settings",JSON.stringify({count,dur,fmt,capStyle,capAnim,capSize,capColor,center,reframe,smooth,captions,track,trans,mode,api}))}catch(e){}},[count,dur,fmt,capStyle,capAnim,capSize,capColor,center,reframe,smooth,captions,track,trans,mode,api]);
@@ -151,7 +161,21 @@ function App(){
           <input ref=${fileRef} type="file" accept="video/*" hidden onChange=${e=>{const f=e.target.files[0];e.target.value="";if(!f)return;if(!f.type.startsWith("video/")){setUrlErr("Please choose a video file");return}setFileObj(f);setFile(f.name+" ("+(f.size/1048576).toFixed(1)+" MB)");setUrlErr("");say("Selected: "+f.name)}}/>
           <button class="btn" onClick=${()=>fileRef.current.click()}>⬆ Upload Video</button></div>
         ${urlErr&&html`<p style=${{color:"#f87171",margin:"10px 0 0",fontSize:14}}>⚠ ${urlErr}</p>`}
-        ${file&&html`<p class="sub" style=${{marginTop:10}}>📁 ${file} <button class="btn" style=${{minHeight:34,padding:"0 10px",marginLeft:8}} onClick=${()=>{setFile(null);setFileObj(null)}}>Remove</button></p>`}
+        ${file&&html`<p class="sub" style=${{marginTop:10}}>📁 ${file} <button class="btn" style=${{minHeight:34,padding:"0 10px",marginLeft:8}} onClick=$ {()=>{setFile(null); setFileObj(null)}}>Remove</button></p>"}
+        ${previewUrl&&html`
+  <video
+    src=${previewUrl}
+    controls
+    playsInline
+    style=${{
+      width:"100%",
+      maxHeight:360,
+      marginTop:12,
+      borderRadius:12,
+      background:"#000"
+    }}
+  ></video>
+`}
         <div class="grid" style=${{marginTop:6}}>
           <div><span class="lab">Number of clips</span><${Seg} opts=${[5,10,15,20]} val=${count} set=${setCount}/></div>
           <div><span class="lab">Clip duration</span><${Seg} opts=${[15,30,60,90]} val=${dur} set=${setDur} fmtr=${o=>o+"s"}/></div>
